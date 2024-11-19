@@ -1,19 +1,42 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Federal Agency Search</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Federal Agency Projects</title>
 </head>
 <body>
-    <div id="app">
-        <h1>Search Federal Agency Projects</h1>
-        <input type="text" id="keyword" placeholder="Enter keyword to search">
-        <button id="searchButton">Search</button>
-        <div id="results"></div>
-    </div>
+  <h1>Search Federal Agency Projects</h1>
+  
+  <form id="search-form">
+    <label for="keyword">Enter Keyword:</label>
+    <input type="text" id="keyword" name="keyword" required />
+    <button type="submit">Search</button>
+  </form>
 
-    <script src="app.js"></script>
+  <div id="results">
+    <!-- Results will be displayed here -->
+  </div>
+
+  <script>
+    // JavaScript to handle form submission and display results
+    const form = document.getElementById('search-form');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const keyword = document.getElementById('keyword').value;
+
+      fetch(`/search?keyword=${keyword}`)
+        .then(response => response.json())
+        .then(data => {
+          const resultsDiv = document.getElementById('results');
+          resultsDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          alert('Error fetching data');
+        });
+    });
+  </script>
 </body>
 </html>
