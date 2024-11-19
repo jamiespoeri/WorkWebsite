@@ -1,0 +1,16 @@
+{
+    "name": "workwebsite",
+    "version": "1.0.0",
+    "description": "A website to search federal agency projects by keyword",
+    "main": "index.js",
+    "scripts": {
+        "start": "node src/backend/server.js"
+    },
+    "dependencies": {
+        "axios": "^1.7.7",
+        "dotenv": "^16.4.5",
+        "express": "^4.21.1"
+    },
+    "author": "",
+    "license": "ISC"
+}
