@@ -1,38 +1,46 @@
-// Import dependencies
+// Import required packages
 const express = require('express');
 const axios = require('axios');
-require('dotenv').config();
+require('dotenv').config(); // To load environment variables from .env
 
-// Initialize the app
+// Initialize Express app
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware to parse JSON requests
-app.use(express.json());
-
-// Sample route to test if the server is working
-app.get('/', (req, res) => {
-  res.send('Hello, world!');
-});
-
-// Example route to search federal agency projects by keyword
+// Route to handle keyword search
 app.get('/search', async (req, res) => {
-  const keyword = req.query.keyword;
-  if (!keyword) {
-    return res.status(400).send("Keyword is required");
-  }
+    const keyword = req.query.keyword || 'climate'; // Default keyword is 'climate'
+    
+    try {
+        // Fetch data from Data.gov API
+        const response = await axios.get('http://catalog.data.gov/api/3/action/package_search', {
+            params: {
+                q: keyword,    // Search query for the keyword
+                rows: 10,      // Limit to 10 results (you can adjust this)
+                start: 0       // Start from the first result
+            }
+        });
 
-  try {
-    // Logic to search for federal projects would go here
-    // This is just a placeholder
-    res.send(`Searching for projects with the keyword: ${keyword}`);
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    res.status(500).send('Error fetching data');
-  }
+        // Extract the results
+        const datasets = response.data.result.results.map(item => ({
+            title: item.title,
+            description: item.notes,
+            url: item.url
+        }));
+
+        // Send the datasets as JSON response
+        res.json({
+            success: true,
+            datasets: datasets
+        });
+
+    } catch (error) {
+        console.error('Error fetching data from Data.gov:', error);
+        res.status(500).json({ message: 'Error fetching data' });
+    }
 });
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
+    console.log(`Server running at http://localhost:${port}`);
 });
